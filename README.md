@@ -96,6 +96,7 @@ Body:
 
 -Postman Collection
  # Click here to open the collection in Postman
+ - https://blue-resonance-978455.postman.co/workspace/apiLearn~4e2650d4-175e-4c23-af0f-2d9114840d4c/collection/23702904-d70d056f-c116-4b84-a7df-9364c63e25e2?action=share&creator=23702904
 
 #Author
 -Made with ❤️ by Gaurav Singh
