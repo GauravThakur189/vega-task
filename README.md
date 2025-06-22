@@ -22,8 +22,8 @@ and making it responsive. Also I will update multer with aws s3.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/blog-backend.git
-cd blog-backend
+https://github.com/GauravThakur189/vega-task
+cd backend
 ```
 ## 3.  Install Dependencies
 -npm install
