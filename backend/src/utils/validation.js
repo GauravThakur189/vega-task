@@ -1,14 +1,14 @@
 const validator = require('validator');
 
 const validateSignupData = (data) => {
-    const { firstName, lastName, emailId, password } = data;
+    const { username, emailId, password } = data;
 
     if (!username || !emailId || !password) {
         throw new Error('All fields are required');
     }
 
     if (!validator.isAlpha(username) ) {
-        throw new Error('First and last names must contain only letters');
+        throw new Error('name must contain only letters');
     }
 
     if (!validator.isEmail(emailId)) {
@@ -16,7 +16,7 @@ const validateSignupData = (data) => {
     }
 
     if (!validator.isStrongPassword(password)) {
-        throw new Error('Password is weak');
+        throw new Error('Password must contain at least 8 characters, including uppercase, lowercase, numbers, and symbols');
     }
 }
 
@@ -32,7 +32,7 @@ const validateSigninData = (data)=>{
     }
 
     if(!validator.isStrongPassword(password)){
-        throw new Error('Password is weak')
+        throw new Error('Password must contain at least 8 characters, including uppercase, lowercase, numbers, and symbols')
     }
 }
 

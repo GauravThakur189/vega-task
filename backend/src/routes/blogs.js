@@ -6,7 +6,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// ===== Multer Config for Blog Image Uploads =====
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = "uploads/blogs";
@@ -24,13 +24,13 @@ const fileFilter = (req, file, cb) => {
 };
 const upload = multer({ storage, fileFilter });
 
-// ===== Middleware to Extract User from Cookie JWT =====
+
 function verifyUser(req, res, next) {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ message: "Unauthorized - no token" });
 
   try {
-    const decoded = jwt.verify(token, "secret"); // Use env in production
+    const decoded = jwt.verify(token, "vega"); 
     req.user = decoded;
     next();
   } catch (err) {
@@ -38,7 +38,7 @@ function verifyUser(req, res, next) {
   }
 }
 
-// ========== CREATE Blog ==========
+
 blogRouter.post("/blog", verifyUser, upload.single("blogImage"), async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -59,7 +59,6 @@ blogRouter.post("/blog", verifyUser, upload.single("blogImage"), async (req, res
   }
 });
 
-// ========== GET All Blogs ==========
 blogRouter.get("/blogs" , async (req, res) => {
   try {
     const blogs = await Blog.find().populate("userId", "username emailId");
@@ -69,7 +68,7 @@ blogRouter.get("/blogs" , async (req, res) => {
   }
 });
 
-// ========== GET Blog by ID ==========
+
 blogRouter.get("/:id", verifyUser, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id).populate("userId", "username emailId");
@@ -80,28 +79,7 @@ blogRouter.get("/:id", verifyUser, async (req, res) => {
   }
 });
 
-// ========== UPDATE Blog ==========
-// blogRouter.put("/update/:id", verifyUser, upload.single("blogImage"), async (req, res) => {
-//   try {
-//     const blog = await Blog.findById(req.params.id);
-//     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-//     if (blog.userId.toString() !== req.user.id) {
-//       return res.status(403).json({ message: "Not authorized to update this blog" });
-//     }
-
-//     blog.title = req.body.title || blog.title;
-//     blog.description = req.body.description || blog.description;
-//     if (req.file) {
-//       blog.blogImageURL = `/uploads/blogs/${req.file.filename}`;
-//     }
-
-//     const updated = await blog.save();
-//     res.json(updated);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error updating blog" });
-//   }
-// });
 
 blogRouter.put("/update/:id", verifyUser, upload.single("blogImage"), async (req, res) => {
   try {
@@ -112,12 +90,12 @@ blogRouter.put("/update/:id", verifyUser, upload.single("blogImage"), async (req
       return res.status(403).json({ message: "Not authorized to update this blog" });
     }
 
-    // Optional debug logs
+   
     console.log("Received title:", req.body.title);
     console.log("Received description:", req.body.description);
     console.log("Received file:", req.file?.filename);
 
-    // Only update fields if provided and not empty
+    
     if (typeof req.body.title !== "undefined" && req.body.title.trim() !== "") {
       blog.title = req.body.title.trim();
     }
@@ -138,7 +116,7 @@ blogRouter.put("/update/:id", verifyUser, upload.single("blogImage"), async (req
   }
 });
 
-// ========== DELETE Blog ==========
+
 blogRouter.delete("/delete/:id", verifyUser, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);

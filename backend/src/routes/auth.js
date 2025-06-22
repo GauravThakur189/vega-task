@@ -11,48 +11,15 @@ const {
 } = require("../utils/validation");
 const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
-const { connectToDatabase } = require("../config/database");
-const mongoose = require("mongoose");
 
-// authRouter.post("/signup", async (req, res) => {
-//   // validation of data
-//   try {
-//     console.log("Received signup request with body:", req.body);
-    
-//     //await validateSignupData(req.body);
-//     const user = req.body;
-//     const {username, emailId, password } = user;
-//     console.log(user);
-//     //encrypting the password
-//     const hashPassword = await bcrypt.hash(password, 10);
 
-//     //creating the new instance of the user model
-//     const newUser = new User({
-//       username,
-//       emailId,
-//       password: hashPassword, // Store the hashed password
-//     });
+  
 
-//    const savedUser = await newUser.save();
-//    const token = jwt.sign({ id: savedUser._id }, "secret", { expiresIn: "1h" });
-//    res.cookie("token",token,{
-//     httpOnly: true,
-//     sameSite: 'lax', // 'strict', 'lax', or 'none' (with secure: true for 'none')
-//     // secure: true, // Uncomment in production with HTTPS
-//     maxAge: 3600000 // 1 hour in milliseconds
-//    })
-    
-//     res.json({message:"User created successfully",Data:savedUser});
-//   } catch (error) {
-//     res.status(400).send(error.message);
-//     console.log("Error creating user", error.message);
-//   }
-// });
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const dir = path.join(__dirname, '..', 'uploads', 'profiles');
     
-    // Ensure directory exists
+   
     fs.mkdirSync(dir, { recursive: true });
 
     cb(null, dir);
@@ -75,6 +42,7 @@ const upload = multer({ storage, fileFilter });
 
 authRouter.post("/signup", upload.single('profileImage'), async (req, res) => {
   try {
+    validateSignupData(req.body);
     const { username, emailId, password } = req.body;
     const photoUrl = req.file ? `/uploads/profiles/${req.file.filename}` : null;
 
@@ -88,7 +56,7 @@ authRouter.post("/signup", upload.single('profileImage'), async (req, res) => {
     });
 
     const savedUser = await newUser.save();
-    const token = jwt.sign({ id: savedUser._id }, "secret", { expiresIn: "1h" });
+    const token = jwt.sign({ id: savedUser._id }, "vega", { expiresIn: "1h" });
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -96,7 +64,7 @@ authRouter.post("/signup", upload.single('profileImage'), async (req, res) => {
       maxAge: 3600000
     });
 
-    // Exclude password from response
+    
     const userToReturn = {
       id: savedUser._id,
       username: savedUser.username,
@@ -131,7 +99,7 @@ authRouter.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     
     if (isMatch) {
-      const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "1h" });
+      const token = jwt.sign({ id: user._id }, "vega", { expiresIn: "1h" });
       
       // Set cookie with appropriate options
       res.cookie("token", token, {
@@ -169,7 +137,7 @@ authRouter.get("/user", async (req, res) => {
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-    const decoded = jwt.verify(token, "secret");
+    const decoded = jwt.verify(token, "vega");
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) return res.status(404).json({ message: "User not found" });
